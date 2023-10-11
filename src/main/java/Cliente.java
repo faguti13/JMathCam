@@ -14,10 +14,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.*;
+import java.net.Socket;
 
 public class Cliente {
     private static boolean captureRequested = false;
+    private static String serverAddress = "localhost"; // Dirección IP del servidor
+    private static int serverPort = 12345; // Puerto del servidor
 
     public static void main(String[] args) {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -38,7 +41,9 @@ public class Cliente {
         // Crear la ventana de la aplicación
         JFrame frame = new JFrame("JMathCam");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(1280, 1024);
+
+        frame.setLocationRelativeTo(null);
 
         // Crear un VideoPanel personalizado para mostrar el cuadro de video
         VideoPanel videoPanel = new VideoPanel();
@@ -74,6 +79,13 @@ public class Cliente {
                 // Procesar el texto ingresado (puedes realizar cualquier procesamiento que desees aquí)
                 if (userInput != null) {
                     System.out.println("Texto ingresado: " + userInput);
+
+                    // Enviar el texto al servidor y recibir el resultado
+                    String resultadoFromServer = sendTextToServer(userInput);
+                    System.out.println("Resultado del servidor: " + resultadoFromServer);
+
+                    // Mostrar el resultado en una ventana emergente
+                    receiveTextFromServerAndShowPopup(resultadoFromServer);
                 }
             }
         });
@@ -123,6 +135,13 @@ public class Cliente {
                     try {
                         String texto = tesseract.doOCR(new File("imagen_preprocesada.jpg"));
                         System.out.println("Texto extraído: " + texto);
+
+                        // Enviar el texto al servidor
+                        sendTextToServer(texto);
+
+                        String resultadoFromServer = receiveTextFromServer();
+                        System.out.println("Resultado del servidor: " + resultadoFromServer);
+
                     } catch (TesseractException ex) {
                         ex.printStackTrace();
                     }
@@ -159,5 +178,44 @@ public class Cliente {
                 g.drawImage(image, 0, 0, getWidth(), getHeight(), null); // Centrar la imagen
             }
         }
+    }
+
+    // Método para enviar texto al servidor
+    private static String sendTextToServer(String text) {
+        try (Socket socket = new Socket(serverAddress, serverPort);
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+            // Enviar el texto al servidor
+            out.println(text);
+
+            // Recibir el resultado del servidor
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            return in.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error al recibir el resultado del servidor.";
+        }
+    }
+
+    // Método para recibir texto del servidor
+    private static String receiveTextFromServer() {
+        try (Socket socket = new Socket(serverAddress, serverPort);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+            // Leer el texto del servidor
+            return in.readLine();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error al recibir el resultado del servidor.";
+        }
+    }
+
+    private static void receiveTextFromServerAndShowPopup(String resultado) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Mostrar el resultado en una ventana emergente
+                JOptionPane.showMessageDialog(null, "Resultado del servidor: " + resultado, "Resultado", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
     }
 }

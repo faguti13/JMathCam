@@ -1,4 +1,4 @@
-import java.util.Stack;
+
 public class Nodo<T>  {
     private T data;
     protected Nodo<T> left;
