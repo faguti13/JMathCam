@@ -1,0 +1,37 @@
+[33mcommit 66b1122199e844fe2b508218a7d327f324326b6c[m[33m ([m[1;36mHEAD -> [m[1;32mArbol[m[33m, [m[1;31morigin/Arbol[m[33m)[m
+Author: Adrián <adrianmnzalv105@gmail.com>
+Date:   Mon Oct 16 18:35:37 2023 -0600
+
+    se implementa el arbol, faltan potencias y numeros dedos digitos
+
+[33mcommit 4460e7380f3f90c13c9c09b1ef3ce450b74ce173[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: faguti13 <fagutierrez1318@gmail.com>
+Date:   Tue Oct 10 20:36:45 2023 -0600
+
+    Recibir resultado de expresión ingresada por el cliente desde el servidor
+
+[33mcommit 7ed791517a1af6fec0eca039b404a2f34260071e[m
+Author: Fabian Gutierrez Jimenez <132792598+faguti13@users.noreply.github.com>
+Date:   Sun Oct 8 20:04:19 2023 -0600
+
+    Se implementó el acceso a la camara y la extraccion del texto desde la camara
+    
+    Se implementó el acceso a la camara y la extraccion del texto desde la camara
+
+[33mcommit 011fdb4e1889496560f712ccc5a60bdb1ebcac5e[m
+Author: unknown <fagutierrez1318@gmail.com>
+Date:   Sun Oct 8 10:14:19 2023 -0600
+
+    Adding tess4j and OpenCV libs
+
+[33mcommit fe91969ac76d14cd04ebe587d0cd7524c74b9511[m
+Author: Fabian Gutierrez Jimenez <132792598+faguti13@users.noreply.github.com>
+Date:   Wed Oct 4 09:58:01 2023 -0600
+
+    Update README.md
+
+[33mcommit d8e0ff4139ee40ab317211d5002dea430c61bc11[m
+Author: unknown <fagutierrez1318@gmail.com>
+Date:   Wed Oct 4 09:57:02 2023 -0600
+
+    first commit
