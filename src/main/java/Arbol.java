@@ -1,5 +1,3 @@
-import java.util.Stack;
-
 public class Arbol<T> {
     private Nodo<T> raiz;
 
@@ -23,7 +21,6 @@ public class Arbol<T> {
         }
         raiz = pila.pop();
     }
-
 
     public int evaluar() {
         return evaluarRecursivo(raiz);
@@ -74,6 +71,9 @@ public class Arbol<T> {
                     return a & b;
                 case '^': // Caso para el operador XOR
                     return a ^ b;
+                case '$': // Caso para el operador XOR
+                    int x = (int) Math.pow(a,b);
+                    return x;
                 case '~':
                     return -a - 1;
                 default:
@@ -89,4 +89,7 @@ public class Arbol<T> {
         return Character.isDigit(c);
     }
 }
+
+
+
 

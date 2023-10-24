@@ -1,4 +1,4 @@
-import java.util.Stack;
+
 import java.util.regex.*;
 import java.util.Scanner;
 
@@ -8,13 +8,31 @@ public class Main {
         System.out.print("Introduce una operación matemática: ");
         String operacion = scanner.nextLine();
 
-        String UnDig = procesarOperacion(operacion);
-
+        String expresionModificada = reemplazarDobleAsterisco(operacion);
+        System.out.println(expresionModificada);
+        String UnDig = procesarOperacion(expresionModificada);
         String aPOS = convertirInfijoAPostfijo(UnDig);
         System.out.println("Resultado: " + aPOS);
         Arbol<Integer> arbol = new Arbol<>(aPOS);
         int resultado = arbol.evaluar();
         System.out.println("Resultado: " + resultado);
+    }
+
+    public static String reemplazarDobleAsterisco(String expresion) {
+        StringBuilder resultado = new StringBuilder();
+        int i = 0;
+
+        while (i < expresion.length()) {
+            if (i < expresion.length() - 1 && expresion.substring(i, i + 2).equals("**")) {
+                resultado.append("$");
+                i += 2;
+            } else {
+                resultado.append(expresion.charAt(i));
+                i++;
+            }
+        }
+
+        return resultado.toString();
     }
 
     public static String procesarOperacion(String operacion) {
@@ -55,7 +73,7 @@ public class Main {
     }
     // Implementa la función para convertir de notación infija a postfija aquí
     private static boolean esOperador(char c) {
-        return c == '+' || c == '-' || c == '*' || c == '/' || c == '%';
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == '%'|| c == '$';
     }
 
     // Función para obtener la precedencia de un operador
@@ -67,6 +85,7 @@ public class Main {
             case '*':
             case '/':
             case '%':
+            case '$':
                 return 2;
         }
         return 0;
@@ -75,7 +94,7 @@ public class Main {
     // Función para convertir una expresión infija a postfija
     public static String convertirInfijoAPostfijo(String expresionInfija) {
         StringBuilder expresionPostfija = new StringBuilder();
-        Stack<Character> pila = new Stack<>();
+        Pila<Character> pila = new Pila<>();
 
         for (char c : expresionInfija.toCharArray()) {
             if (Character.isLetterOrDigit(c)) {
@@ -109,4 +128,5 @@ public class Main {
 
         return expresionPostfija.toString();
     }
+
 }
