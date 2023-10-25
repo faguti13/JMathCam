@@ -1,3 +1,11 @@
+/**
+ * Esta clase representa un cliente que captura imágenes de una cámara web,
+ * realiza reconocimiento de texto en las imágenes y se comunica con un servidor
+ * para procesar y mostrar los resultados.
+ *
+ * @author Fabian Gutierrez Jimenez
+ */
+
 import org.opencv.core.*;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.imgproc.Imgproc;
@@ -6,7 +14,6 @@ import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.highgui.HighGui;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,6 +23,8 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Cliente {
     private static boolean captureRequested = false;
@@ -33,7 +42,7 @@ public class Cliente {
         }
 
         ITesseract tesseract = new Tesseract();
-        tesseract.setDatapath("C:\\Users\\FabianGJ\\Downloads\\Tess4J\\tessdata"); // Ruta al directorio tessdata
+        tesseract.setDatapath("C:\\Tess4J\\tessdata"); // Ruta al directorio tessdata
 
         Mat destination = new Mat();
         Mat source = new Mat();
@@ -58,8 +67,17 @@ public class Cliente {
         buttonPanel.add(captureButton); // Agregar el botón al panel de botones
 
         // Crear un botón para escribir texto
-        JButton writeTextButton = new JButton("Escribir Texto");
+        JButton writeTextButton = new JButton("Escribir expresión");
         buttonPanel.add(writeTextButton); // Agregar el botón al panel de botones
+
+        // Crea un botón que abrirá el visor de CSV
+        JButton openCsvViewerButton = new JButton("Historial");
+        buttonPanel.add(openCsvViewerButton);
+        openCsvViewerButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                openCsvViewer();
+            }
+        });
 
         // Manejar el evento del botón para tomar una foto
         captureButton.addActionListener(new ActionListener() {
@@ -86,6 +104,8 @@ public class Cliente {
 
                     // Mostrar el resultado en una ventana emergente
                     receiveTextFromServerAndShowPopup(resultadoFromServer);
+
+
                 }
             }
         });
@@ -134,13 +154,34 @@ public class Cliente {
                     // Utilizar Tesseract OCR para extraer texto
                     try {
                         String texto = tesseract.doOCR(new File("imagen_preprocesada.jpg"));
-                        System.out.println("Texto extraído: " + texto);
+                        texto = texto.replace("\n", "");
+                        System.out.println(texto);
 
-                        // Enviar el texto al servidor
-                        sendTextToServer(texto);
-
-                        String resultadoFromServer = receiveTextFromServer();
+                        // Enviar el texto al servidor y recibir el resultado
+                        String resultadoFromServer = sendTextToServer(texto);
                         System.out.println("Resultado del servidor: " + resultadoFromServer);
+
+                        // Mostrar el resultado en una ventana emergente
+                        receiveTextFromServerAndShowPopup(resultadoFromServer);
+
+                        String filePath = "registro.csv";
+                        CsvWriter csvWriter = new CsvWriter(filePath);
+
+                        // Obtén la fecha y hora actual
+                        LocalDateTime currentDateTime = LocalDateTime.now();
+
+                        // Define un formato personalizado para la fecha y hora
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                        // Convierte la fecha y hora actual en una cadena
+                        String formattedDateTime = currentDateTime.format(formatter);
+
+                        String[] entries = {
+                                texto, resultadoFromServer, formattedDateTime
+                        };
+
+                        csvWriter.writeCsv(entries);
+
 
                     } catch (TesseractException ex) {
                         ex.printStackTrace();
@@ -186,6 +227,8 @@ public class Cliente {
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
             // Enviar el texto al servidor
             out.println(text);
+            System.out.println(text);
+
 
             // Recibir el resultado del servidor
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -218,4 +261,11 @@ public class Cliente {
             }
         });
     }
+
+    private static void openCsvViewer() {
+        CsvViewer csvViewer = new CsvViewer();
+        csvViewer.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        csvViewer.setVisible(true);
+    }
+
 }
