@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 public class Servidor {
@@ -26,13 +27,24 @@ public class Servidor {
                 String expresionPostfija = convertirInfijoAPostfijo(expresionInfija);
                 System.out.println("Expresion post fija: " + expresionPostfija);
 
+
+
                 // Construye y evalúa el árbol de expresiones con notación postfija
-                Arbol<Character> arbol = new Arbol<>(expresionPostfija);
-                int resultado = arbol.evaluar();
-                System.out.println("Resultado de expresion: " + resultado);
+                Arbol<Character> arbol = null;
+                int resultado = 0;
+
+                try {
+                    arbol = new Arbol<>(expresionPostfija);
+                    resultado = arbol.evaluar();
+                } catch (EmptyStackException e){
+                    e.printStackTrace();
+                    resultado = -1;
+                }
+
+                //System.out.println("Resultado de expresion: " + resultado);
 
                 // Envia el resultado al cliente
-                salidaCliente.println("Resultado: " + resultado);
+                salidaCliente.println(resultado);
 
                 // Cierra la conexión con el cliente
                 clienteSocket.close();
