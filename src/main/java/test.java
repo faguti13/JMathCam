@@ -1,87 +1,21 @@
-/**
- * Esta clase representa un servidor que escucha a los clientes y procesa expresiones matemáticas.
- * El servidor recibe expresiones matemáticas en notación infija, las convierte a notación postfija
- * y luego evalúa su resultado. Los resultados y las expresiones se almacenan en un archivo CSV.
- *
- * @authors Fabián Gutiérrez Jiménez y Adrián Muñoz Alvarado
- */
 
-import java.io.*;
-import java.net.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
+import java.util.Scanner;
 
-public class Servidor {
+public class test {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Introduce una operación matemática: ");
+        String operacion = scanner.nextLine();
 
-        // Configura el servidor para escuchar en un puerto específico (por ejemplo, 12345)
-        int puerto = 12345;
-        try (ServerSocket serverSocket = new ServerSocket(puerto)) {
-            System.out.println("Servidor esperando conexiones en el puerto " + puerto + "...");
-
-            while (true) {
-                // Acepta conexiones de clientes
-                Socket clienteSocket = serverSocket.accept();
-                System.out.println("Cliente conectado desde " + clienteSocket.getInetAddress().getHostAddress());
-
-                // Crea flujos de entrada y salida para comunicarse con el cliente
-                BufferedReader entradaCliente = new BufferedReader(new InputStreamReader(clienteSocket.getInputStream()));
-                PrintWriter salidaCliente = new PrintWriter(clienteSocket.getOutputStream(), true);
-
-                // Lee la expresión infija del cliente
-                String expresionInfija = entradaCliente.readLine();
-                String expresionModificada = reemplazarDobleAsterisco(expresionInfija);
-                System.out.println(expresionModificada);
-                String UnDig = procesarOperacion(expresionModificada);
-                System.out.println(UnDig);
-                String aPOS = convertirInfijoAPostfijo(UnDig);
-                System.out.println("Resultado: " + aPOS);
-
-
-
-                Arbol<Integer> arbol;
-                int resultado = 0;
-
-                try {
-
-                    arbol = new Arbol<>(aPOS);
-                    resultado = arbol.evaluar();
-                    salidaCliente.println(resultado);
-                    String filePath = "registro.csv";
-                    CsvWriter csvWriter = new CsvWriter(filePath);
-
-                    // Obtén la fecha y hora actual
-                    LocalDateTime currentDateTime = LocalDateTime.now();
-
-                    // Define un formato personalizado para la fecha y hora
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-                    // Convierte la fecha y hora actual en una cadena
-                    String formattedDateTime = currentDateTime.format(formatter);
-
-                    String[] entries = {
-                            entradaCliente.readLine(), salidaCliente.toString(), formattedDateTime
-                    };
-
-                    csvWriter.writeCsv(entries);
-
-                } catch (IllegalStateException e){
-                    e.printStackTrace();
-                    String error;
-                    error = "Expresión inválida";
-                    salidaCliente.println(error);
-
-                }
-
-                // Cierra la conexión con el cliente
-                clienteSocket.close();
-                System.out.println("Cliente desconectado.");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String expresionModificada = reemplazarDobleAsterisco(operacion);
+        System.out.println(expresionModificada);
+        String UnDig = procesarOperacion(expresionModificada);
+        String aPOS = convertirInfijoAPostfijo(UnDig);
+        System.out.println("Resultado: " + aPOS);
+        Arbol<Integer> arbol = new Arbol<>(aPOS);
+            float resultado = arbol.evaluar();
+        System.out.println("Resultado: " + resultado);
     }
 
     public static String reemplazarDobleAsterisco(String expresion) {

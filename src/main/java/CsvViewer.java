@@ -1,3 +1,9 @@
+/**
+ * Esta clase representa un visor de registros en formato CSV. Lee los registros desde un archivo CSV
+ * y los muestra en una tabla en una ventana Swing.
+ *
+ * @author Fabián Gutiérrez Jiménez
+ */
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
@@ -17,6 +23,9 @@ class RecordNode {
 public class CsvViewer extends JFrame {
     private JTable table;
 
+    /**
+     * Crea una instancia del visor de registros CSV.
+     */
     public CsvViewer() {
         setTitle("Visor de Registros CSV");
         setSize(600, 400);
@@ -26,7 +35,7 @@ public class CsvViewer extends JFrame {
         RecordNode records = readCsvFile("registro.csv");
 
         // Define las columnas para la tabla
-        String[] columnNames = {"Expresión", "Resultado", "Fecha"};
+        String[] columnNames = {"Expresión", "Resultado", "Fecha y hora"};
 
         // Crea un modelo de tabla personalizado para mostrar los registros
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);

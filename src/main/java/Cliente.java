@@ -1,3 +1,11 @@
+/**
+ * Esta clase representa un cliente que captura imágenes de una cámara web,
+ * realiza reconocimiento de texto en las imágenes y se comunica con un servidor
+ * para procesar y mostrar los resultados.
+ *
+ * @author Fabian Gutierrez Jimenez
+ */
+
 import org.opencv.core.*;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.imgproc.Imgproc;
@@ -59,11 +67,11 @@ public class Cliente {
         buttonPanel.add(captureButton); // Agregar el botón al panel de botones
 
         // Crear un botón para escribir texto
-        JButton writeTextButton = new JButton("Escribir Texto");
+        JButton writeTextButton = new JButton("Escribir expresión");
         buttonPanel.add(writeTextButton); // Agregar el botón al panel de botones
 
         // Crea un botón que abrirá el visor de CSV
-        JButton openCsvViewerButton = new JButton("Abrir Visor CSV");
+        JButton openCsvViewerButton = new JButton("Historial");
         buttonPanel.add(openCsvViewerButton);
         openCsvViewerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -97,23 +105,6 @@ public class Cliente {
                     // Mostrar el resultado en una ventana emergente
                     receiveTextFromServerAndShowPopup(resultadoFromServer);
 
-                    String filePath = "registro.csv";
-                    CsvWriter csvWriter = new CsvWriter(filePath);
-
-                    // Obtén la fecha y hora actual
-                    LocalDateTime currentDateTime = LocalDateTime.now();
-
-                    // Define un formato personalizado para la fecha y hora
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-                    // Convierte la fecha y hora actual en una cadena
-                    String formattedDateTime = currentDateTime.format(formatter);
-
-                    String[] entries = {
-                            userInput, resultadoFromServer, formattedDateTime
-                    };
-
-                    csvWriter.writeCsv(entries);
 
                 }
             }
@@ -236,6 +227,8 @@ public class Cliente {
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
             // Enviar el texto al servidor
             out.println(text);
+            System.out.println(text);
+
 
             // Recibir el resultado del servidor
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
